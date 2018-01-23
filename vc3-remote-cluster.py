@@ -31,7 +31,7 @@ class RemoteCluster(object):
         self.lrms       = lrms
         self.loglevel   = loglevel
         # Setup logging
-        self.setup_logging(self.loglevel)
+        self._setup_logging(self.loglevel)
         # setup Paramiko
         try:
             self.ssh = paramiko.SSHClient()
@@ -41,40 +41,62 @@ class RemoteCluster(object):
         except Exception as e:
             self.log.debug(e)
             self.log.error("Failed to establish SSH connection")
+            
+    def install(self):
+        """
+        Externally-facing class for moving artifacts to the remote side
+        """
 
-        self.mk_installdir()
+        self._mkinstalldir()
+            
+    def status(self):
+        """
+        Check the status of currently configured clusters
+        """
+    
+    def remove(self):
+        """
+        Remove currently configured clusters
+        """
 
-        # Cleanup
-        self.ssh.close()
+    def config_lrms_attributes(self):
+        """
+        Add the resource-specific and user-specific quirks necessary for a site.
+
+        e.g. PBS or SLURM preprocessor config, HTCondor submit file requirements, etc
+        """
 
     def cleanup(self):
+        self.sftp.close()
+        self.ssh.close()
         sys.exit(1)
 
-    def mk_installdir(self):
+    def _mkinstalldir(self):
         """
         Create the installation directory for the BLAHP and remote GAHP files
         """
         self.log.info("Creating installation directory %s" % self.installdir)
         # spaces are important
         (stdin,stdout,stderr) = self.ssh.exec_command("mkdir -p " + self.installdir)
-        if stderr.readlines() is not None:
+        error = stderr.readlines()
+        if error:
             self.log.error("Could not create installation dir")
-            self.log.debug(stderr.readlines())
+            self.log.debug("".join(error).rstrip())
             self.cleanup()
 
-    def install_blahp(self):
+    def _install_blahp(self):
         """
         Pull the BLAHP scripts from a local HTCondor install and then copy them
         over to the remote side
         """
 
-    def install_glite(self):
+    def _install_glite(self):
         """
         Pull the glite scripts from a local HTCondor install and then copy them
         over to the remote side
         """
 
-    def config_ftgahp(self):
+    def _config_ftgahp(self):
         """
         This method will create the configuration for the condor file transfer
         GAHP binary that runs on the remote side. 
@@ -92,14 +114,7 @@ class RemoteCluster(object):
         EOF
         """
 
-    def config_lrms_attributes(self):
-        """
-        Add the resource-specific and user-specific quirks necessary for a site.
-
-        e.g. PBS or SLURM preprocessor config, HTCondor submit file requirements, etc
-        """
-        
-    def setup_logging(self, loglevel):
+    def _setup_logging(self, loglevel):
         """
         Setup the logging handler and format
         """
@@ -113,16 +128,19 @@ class RemoteCluster(object):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Install HTCondor Remote GAHP and BLAH")
+    parser.add_argument("-v", "--verbosity", action="count", default=0)
+    subparsers = parser.add_subparsers(title='subcommands',description='additional subcommands')
 
-    parser.add_argument("remotehost", help="Hostname of the remote batch submitter")
-    parser.add_argument("lrms", action="store",
+    parser_install = subparsers.add_parser('install', help='install help')
+    parser_install.set_defaults(which='install')
+    parser_install.add_argument("remotehost", help="Hostname of the remote batch submitter")
+    parser_install.add_argument("lrms", action="store",
         help="Type of local resource management system. One of: condor, slurm, pbs, lsf")
 
-    parser.add_argument("-i","--installdir", action="store",
+    parser_install.add_argument("-i","--installdir", action="store",
         help="Installation path (default: $HOME/.condor/remote)", default="$HOME/.condor/remote")
-    parser.add_argument("-u", "--user", action="store",
+    parser_install.add_argument("-u", "--user", action="store",
         help="Username on the remote submit host (default: $USER)", default=os.environ['USER'])
-    parser.add_argument("-v", "--verbosity", action="count", default=0)
 
     args = parser.parse_args()
 
@@ -135,12 +153,15 @@ if __name__ == '__main__':
     else:
         loglevel=30
 
+    print(args)
     
-    rc = RemoteCluster(
-        installdir=args.installdir,
-        remotehost=args.remotehost,
-        user=args.user,
-        lrms=args.lrms,
-        loglevel=loglevel
-    )
-
+    if args.which == 'install':
+        print("install selected")
+        rc = RemoteCluster(
+            installdir=args.installdir,
+            remotehost=args.remotehost,
+            user=args.user,
+            lrms=args.lrms,
+            loglevel=loglevel
+        )
+        rc.install()
