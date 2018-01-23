@@ -153,10 +153,7 @@ if __name__ == '__main__':
     else:
         loglevel=30
 
-    print(args)
-    
     if args.which == 'install':
-        print("install selected")
         rc = RemoteCluster(
             installdir=args.installdir,
             remotehost=args.remotehost,
