@@ -349,7 +349,7 @@ if __name__ == '__main__':
         help="Request tag hook (default: None)",
         default=None)
     parser.add_argument("-s", "--sandbox", action="store", 
-        help="Sandbox directory (default: %installdir/sandbox)",
+        help="Sandbox directory (default: $installdir/bosco/sandbox)",
         default=None)
 
     args = parser.parse_args()
