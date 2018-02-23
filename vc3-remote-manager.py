@@ -94,7 +94,7 @@ class Bosco(object):
             self.installdir = installdir
 
         if sandbox is None:
-            self.sandbox = os.path.join(self.installdir,"sandbox")
+            self.sandbox = os.path.join(self.installdir,"bosco/sandbox")
             log.debug("Sandbox directory not specified, defaulting to %s" % self.sandbox)
         else:
             self.sandbox = sandbox
@@ -219,10 +219,10 @@ class Bosco(object):
         #EOF
         config = """\
             BOSCO_SANDBOX_DIR=%s
-            LOG=%s/glite/log
+            LOG=%s/bosco/glite/log
             FT_GAHP_LOG=$(LOG)/FTGahpLog
             SEC_CLIENT_AUTHENTICATION_METHODS = FS, PASSWORD
-            SEC_PASSWORD_FILE = %s/glite/etc/passwdfile
+            SEC_PASSWORD_FILE = %s/bosco/glite/etc/passwdfile
             USE_SHARED_PORT = False
             ENABLE_URL_TRANSFERS = False
         """ % (self.sandbox, self.installdir, self.installdir)
