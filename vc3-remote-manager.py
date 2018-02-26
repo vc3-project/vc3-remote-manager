@@ -139,7 +139,8 @@ class Bosco(object):
             'sbin/condor_ft-gahp' ]
         blahp_dirs = [
             'lib/condor/', 
-            'libexec/glite/bin' ]
+            'libexec/glite/bin',
+            'libexec/glite/etc' ]
 
         # open the tarball, extract blahp_files and blahp_dirs to tmp
         with TarFile.open(tarfile) as t:
@@ -156,9 +157,7 @@ class Bosco(object):
 
         # once things are in tmp, we need to need to move things around and
         # make some directories
-        dirs = [ 'bosco/glite/etc', 
-                 'bosco/glite/log', 
-                 'bosco/sandbox' ]
+        dirs = [ 'bosco/glite/log', 'bosco/sandbox' ]
         log.debug("Creating BOSCO directories...")
         for dir in dirs:
             os.makedirs(os.path.join(tempdir, dir))
@@ -167,6 +166,7 @@ class Bosco(object):
         to_move = (
             ['lib','bosco/glite/lib'],
             ['libexec/glite/bin', 'bosco/glite/bin'],
+            ['libexec/glite/etc', 'bosco/glite/etc'],
             ['sbin/condor_ft-gahp', 'bosco/glite/bin/condor_ft-gahp'] )
 
         for tuple in to_move:
