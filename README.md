@@ -19,7 +19,7 @@ You can then submit test jobs like so:
 ```
 universe = grid
 executable = /bin/whoami
-transfer_executable = true
+transfer_executable = false
 grid_resource = batch condor login03.osgconnect.net --rgahp-glite /home/lincolnb/bosco/glite --rgahp-nokey
 output = $(Cluster).$(Process).out
 error = $(Cluster).$(Process).err
