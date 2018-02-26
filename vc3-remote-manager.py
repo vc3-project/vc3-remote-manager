@@ -12,6 +12,7 @@ import os
 import paramiko
 import re
 import shutil
+import shlex
 import sys
 import tarfile
 import tempfile
@@ -51,26 +52,6 @@ class SSHManager(object):
 
         return out, err
         
-
-    #def put(self, dst, *srcs, recurse=False):
-    #    """
-    #    Accept any number of src files, copy to destination
-    #    """
-    #    try: self.sftp.lstat(dst)
-    #    except:
-    #        self.log.debug("Cannot stat, assuming")
-
-    #    files=[]
-    #    dirs=[]
-    #    for s in srcs:
-    #        if os.path.isdir(s):
-    #            for root, d, f in os.walk(s):
-    #                for file in f:
-    #                    files.append(os.path.join(root,file)) 
-    #                for dir in d:
-    #                    dirs.append(os.path.join(root,dir))
-
-
     def cleanup(self):
         """
         Close SSH, SFTP connnections
@@ -148,7 +129,7 @@ class Bosco(object):
 
         tarfile = os.path.join(self.cachedir,self.version,"bosco-1.2-x86_64_" + distro + ".tar.gz")
     
-        cdir = 'condor-8.6.6-x86_64_RedHat6-stripped/'
+        cdir = 'condor-8.6.6-x86_64_' + distro + '-stripped/'
 
         blahp_files = [
             'lib/libclassad.so.8.6.6', 
@@ -259,15 +240,9 @@ class Cluster(object):
     def resolve_platform(self):
         """
         Try to identify the remote platform. Currently RH+variants/Debian/Ubuntu
-        are supported. A lot of code was lifted from the 'blivet' lib
+        are supported. A lot of code was lifted from the 'blivet' lib which
+        implicitly GPL-ifies this
         """
-        #(stdin, stdout, stderr) = self.ssh.exec_command("uname -p")
-        #arch = "".join(stdout.readlines()).rstrip()
-        #self.log.debug("Remote architecture is: " + arch)
-        #if "x86_64" not in arch:
-        #    self.log.error("Only x86_64 architecture is supported")
-        #    raise Exception
-
         search_path = ['/etc/os-release','/etc/redhat-release']
         for path in search_path:
             try:
@@ -284,7 +259,7 @@ class Cluster(object):
         if 'os-release' in f:
             log.debug("Parsing os-release")
             with ssh.sftp.file(f) as fh:
-                    parser = shlex.shlex(f)
+                    parser = shlex.shlex(fh)
                     while True:
                         key = parser.get_token()
                         if key == parser.eof:
@@ -293,10 +268,13 @@ class Cluster(object):
                             # Throw away the "=".
                             parser.get_token()
                             relName = parser.get_token().strip("'\"")
+                            log.debug(relName)
                         elif key == "VERSION_ID":
                             # Throw away the "=".
                             parser.get_token()
-                            relVer = parser.get_token().strip("'\"")
+                            version = parser.get_token().strip("'\"")
+                            relVer = version.split()[0].split(".",1)[0]
+                            log.debug(relVer)
         elif 'redhat-release' in f:
             log.debug("Parsing redhat-release")
             with ssh.sftp.file(f) as fh:
