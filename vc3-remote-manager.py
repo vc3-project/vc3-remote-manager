@@ -1,28 +1,12 @@
 #!/usr/bin/python
 
 from __future__ import print_function
-from ftplib import FTP
-from tarfile import TarFile
-
 
 import argparse
-import errno
 import logging
 import os
-import paramiko
-import re
 import shutil
-import shlex
 import sys
-import tarfile
-import tempfile
-import textwrap
-
-try:
-    from urllib.parse import urlparse
-except ImportError:
-     from urlparse import urlparse
-
 
 from vc3remotemanager.ssh import SSHManager
 from vc3remotemanager.cluster import Cluster
