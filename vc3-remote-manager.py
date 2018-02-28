@@ -12,7 +12,7 @@ from vc3remotemanager.ssh import SSHManager
 from vc3remotemanager.cluster import Cluster
 from vc3remotemanager.bosco import Bosco
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Install BLAHP and manage remote clusters")
@@ -73,7 +73,7 @@ if __name__ == '__main__':
     Initialize SSHManager and Cluster classes.
     """
     ssh = SSHManager(args.host, args.port, args.login)
-    cluster = Cluster()
+    cluster = Cluster(ssh)
 
     """ 
     Download platform tarballs, extract bosco components, and transfer them
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     """
 
     log.info("Retrieving BOSCO files...")
-    b = Bosco("condor", args.bosco_version, args.repository, args.tag, args.cachedir, args.installdir, args.sandbox)
+    b = Bosco(cluster, ssh, "condor", args.bosco_version, args.repository, args.tag, args.cachedir, args.installdir, args.sandbox)
     b.cache_tarballs()
     distro = cluster.resolve_platform()
     log.info("Extracting BOSCO files for platform %s" % distro)
