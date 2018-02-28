@@ -1,17 +1,11 @@
-from __future__ import print_function
 from ftplib import FTP
 from tarfile import TarFile
 
-
-import argparse
 import errno
 import logging
 import os
-import paramiko
 import re
 import shutil
-import shlex
-import sys
 import tarfile
 import tempfile
 import textwrap
