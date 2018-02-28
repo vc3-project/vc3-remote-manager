@@ -16,34 +16,37 @@ except ImportError:
      from urlparse import urlparse
 
 class Bosco(object):
-    def __init__(self, lrms, version, repository, tag, cachedir, installdir, sandbox):
+    def __init__(self, Cluster, SSHManager, lrms, version, repository, tag, cachedir, installdir, sandbox):
+        self.cluster    = Cluster
+        self.ssh        = SSHManager
         self.lrms       = lrms
         self.version    = version
         self.repository = repository
         self.tag        = tag
         self.cachedir   = cachedir
+        self.log        = logging.getLogger(__name__)
 
         try:
-            self.installdir = cluster.resolve_path(installdir)
-            log.debug("Installdir is %s" % self.installdir)
+            self.installdir = self.cluster.resolve_path(installdir)
+            self.log.debug("Installdir is %s" % self.installdir)
         except:
-            log.warn("Couldn't resolve installdir.. things might not work")
+            self.log.warn("Couldn't resolve installdir.. things might not work")
             self.installdir = installdir
 
         if sandbox is None:
             self.sandbox = os.path.join(self.installdir,"bosco/sandbox")
-            log.debug("Sandbox directory not specified, defaulting to %s" % self.sandbox)
+            self.log.debug("Sandbox directory not specified, defaulting to %s" % self.sandbox)
         else:
             self.sandbox = sandbox
-            log.debug("Sandbox directory is %s" % self.sandbox)
+            self.log.debug("Sandbox directory is %s" % self.sandbox)
 
         self.etcdir = self.installdir + "/bosco/glite/etc"
 
     def cache_tarballs(self):
         r = urlparse(self.repository)
         path = r.path + "/" + self.version
-        log.debug("repo is %s " % r.netloc)
-        log.debug("path is %s " % path)
+        self.log.debug("repo is %s " % r.netloc)
+        self.log.debug("path is %s " % path)
 
         ftp = FTP(r.netloc)
         ftp.login()
@@ -64,14 +67,14 @@ class Bosco(object):
         to_dl = set(tarballs) - set(os.listdir(dldir))
 
         if to_dl:
-            log.info("Caching missing tarballs: %s" % ", ".join(to_dl))
+            self.log.info("Caching missing tarballs: %s" % ", ".join(to_dl))
             for tar in to_dl:
                 fn = os.path.join(dldir, tar)
                 with open(fn, 'wb') as f:
-                    log.debug("Downloading.. %s" % tar)
+                    self.log.debug("Downloading.. %s" % tar)
                     ftp.retrbinary('RETR ' + tar, f.write)
         else:
-            log.debug("Nothing to download, continuing..")
+            self.log.debug("Nothing to download, continuing..")
 
         ftp.close()
     def extract_blahp(self, distro):
@@ -80,7 +83,7 @@ class Bosco(object):
         them to a temporary directory
         """
         tempdir = tempfile.mkdtemp()
-        log.debug("Temporary working directory: %s" % tempdir)
+        self.log.debug("Temporary working directory: %s" % tempdir)
 
         tarfile = os.path.join(self.cachedir,self.version,"bosco-1.2-x86_64_" + distro + ".tar.gz")
 
@@ -107,13 +110,13 @@ class Bosco(object):
                 files = [t.getmember(s) for s in t.getnames() if re.match(match, s)]
                 members.extend(files)
 
-            log.debug("Extracting %s to %s" % (members, tempdir))
+            self.log.debug("Extracting %s to %s" % (members, tempdir))
             t.extractall(tempdir,members)
 
         # once things are in tmp, we need to need to move things around and
         # make some directories
         dirs = [ 'bosco/glite/log', 'bosco/sandbox' ]
-        log.debug("Creating BOSCO directories...")
+        self.log.debug("Creating BOSCO directories...")
         for dir in dirs:
             os.makedirs(os.path.join(tempdir, dir))
 
@@ -127,10 +130,10 @@ class Bosco(object):
         for tuple in to_move:
             src = os.path.join(tempdir,cdir,tuple[0])
             dst = os.path.join(tempdir,tuple[1])
-            log.debug("Moving %s to %s" % (src,dst))
+            self.log.debug("Moving %s to %s" % (src,dst))
             shutil.move(src,dst)
 
-        log.debug("Deleting old directory: %s " % cdir)
+        self.log.debug("Deleting old directory: %s " % cdir)
         shutil.rmtree(os.path.join(tempdir,cdir))
 
         return tempdir
@@ -164,7 +167,7 @@ class Bosco(object):
 
         c = textwrap.dedent(config)
         cfgfile = os.path.join(self.etcdir,"condor_config.ft-gahp")
-        log.info("Writing HTCondor File Transfer GAHP config file %s" % cfgfile)
-        with ssh.sftp.open(cfgfile, 'wb') as f:
+        self.log.info("Writing HTCondor File Transfer GAHP config file %s" % cfgfile)
+        with self.ssh.sftp.open(cfgfile, 'wb') as f:
             f.write(c)
 
