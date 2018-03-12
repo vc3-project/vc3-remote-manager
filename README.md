@@ -8,7 +8,7 @@ Requirements:
 Sample invocation:
 ```bash
 python setup.py --user
-./scripts/vc3-remote-manager.py login03.osgconnect.net condor --installdir . -v
+./scripts/vc3-remote-manager.py login03.osgconnect.net condor -v
 ```
 
 will install to `~/bosco` on the remote side, and configure `~/bosco/etc/condor_ft-gahp.config` appropriately.
