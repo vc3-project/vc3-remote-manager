@@ -79,50 +79,12 @@ if __name__ == '__main__':
     Download platform tarballs, extract bosco components, and transfer them
     to the remote side
     """
-
     log.info("Retrieving BOSCO files...")
     b = Bosco(cluster, ssh, "condor", args.bosco_version, args.repository, args.tag, args.cachedir, args.installdir, args.sandbox)
-    b.cache_tarballs()
-    distro = cluster.resolve_platform()
-    log.info("Extracting BOSCO files for platform %s" % distro)
-    bdir = b.extract_blahp(distro)
-    if args.tag is not None:
-        tarname = "bosco" + "-" + args.tag
-    else:
-        tarname = "bosco"
-    log.info("Creating new BOSCO tarball for target %s" % args.host)
-    t = b.create_tarball(tarname, os.path.join(bdir,"bosco"))
-
-    src = os.path.join(os.getcwd(),t)
-    dst = cluster.resolve_path(args.installdir + "/" + t)
-    log.info("Transferring %s to %s" % (src, dst))
-    try:
-        ssh.sftp.mkdir(cluster.resolve_path(args.installdir))
-    except IOError as e:
-        log.debug("Couldn't create installdir.. perhaps it already exists?")
-    try: 
-        ssh.sftp.put(src, dst)
-    except Exception as e:
-        log.error("Couldn't transfer %s to %s!" % (src, args.host + ":" + dst))
-        log.debug(e)
-        sys.exit(1)
-
-    log.info("Extracting %s to %s" % ((args.host + ":" + dst),args.installdir))
-    out, err = ssh.remote_cmd("tar -xzf " + dst + " -C " + args.installdir )
-    if err is not '':
-        log.debug(err)
-    log.info("Deleting temporary file %s" % dst)
-    ssh.sftp.remove(dst)
-
-    """ 
-    Add configuration for the site
-    """
-    b.config_ft_gahp()
+    b.setup_bosco()
 
     """
     Close any remaining connections and clean up any temporary files
     """
     log.info("Terminating SSH connections...")
     ssh.cleanup()
-    log.info("Deleting temporary file %s" % bdir)
-    shutil.rmtree(bdir)

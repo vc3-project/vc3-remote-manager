@@ -77,6 +77,7 @@ class Bosco(object):
             self.log.debug("Nothing to download, continuing..")
 
         ftp.close()
+
     def extract_blahp(self, distro):
         """
         Extract the BLAHP shared libs and bins for the target platform and dump
@@ -110,7 +111,7 @@ class Bosco(object):
                 files = [t.getmember(s) for s in t.getnames() if re.match(match, s)]
                 members.extend(files)
 
-            self.log.debug("Extracting %s to %s" % (members, tempdir))
+            #self.log.debug("Extracting %s to %s" % (members, tempdir))
             t.extractall(tempdir,members)
 
         # once things are in tmp, we need to need to move things around and
@@ -144,7 +145,6 @@ class Bosco(object):
             tar.add(src, arcname=os.path.basename(src))
         return outfile
 
-
     def config_ft_gahp(self):
         #cat >$remote_glite_dir/etc/condor_config.ft-gahp 2>/dev/null <<EOF
         #BOSCO_SANDBOX_DIR=\$ENV(HOME)/$remote_sandbox_dir
@@ -155,6 +155,9 @@ class Bosco(object):
         #USE_SHARED_PORT = False
         #ENABLE_URL_TRANSFERS = False
         #EOF
+
+        installpath = self.cluster.resolve_path(self.installdir)
+
         config = """\
             BOSCO_SANDBOX_DIR=%s
             LOG=%s/bosco/glite/log
@@ -163,7 +166,7 @@ class Bosco(object):
             SEC_PASSWORD_FILE = %s/bosco/glite/etc/passwdfile
             USE_SHARED_PORT = False
             ENABLE_URL_TRANSFERS = False
-        """ % (self.sandbox, self.installdir, self.installdir)
+        """ % (self.sandbox, installpath, installpath)
 
         c = textwrap.dedent(config)
         cfgfile = os.path.join(self.etcdir,"condor_config.ft-gahp")
@@ -171,3 +174,48 @@ class Bosco(object):
         with self.ssh.sftp.open(cfgfile, 'wb') as f:
             f.write(c)
 
+    def setup_bosco(self):
+        self.log.info("Retrieving BOSCO tarballs from FTP...")
+        self.cache_tarballs()
+
+        distro = self.cluster.resolve_platform()
+        self.log.info("Extracting BOSCO files for platform %s" % distro)
+        bdir = self.extract_blahp(distro)
+        if self.tag is not None:
+            tarname = "bosco" + "-" + self.tag
+        else:
+            tarname = "bosco"
+
+        self.log.info("Creating new BOSCO tarball for target %s" % self.ssh.host)
+        t = self.create_tarball(tarname, os.path.join(bdir,"bosco"))
+        self.log.debug("t is %s" % t)
+
+        src = os.path.join(os.getcwd(),t)
+        dst = self.cluster.resolve_path(self.installdir + "/" + t)
+        self.log.info("Transferring %s to %s" % (src, dst))
+        try:
+            self.ssh.sftp.mkdir(self.cluster.resolve_path(self.installdir))
+        except IOError as e:
+            self.log.debug("Couldn't create installdir.. perhaps it already exists?")
+        try:
+            self.ssh.sftp.put(src, dst)
+        except Exception as e:
+            self.log.error("Couldn't transfer %s to %s!" % (src, self.ssh.host + ":" + dst))
+            self.log.debug(e)
+            raise 
+
+        self.log.info("Extracting %s to %s" % ((self.ssh.host + ":" + dst),self.installdir))
+        out, err = self.ssh.remote_cmd("tar -xzf " + dst + " -C " + self.installdir )
+        if err is not '':
+            self.log.debug(err)
+        self.log.info("Deleting temporary file %s" % dst)
+        self.ssh.sftp.remove(dst)
+
+        """
+        Add configuration for the site
+        """
+        self.config_ft_gahp()
+
+        # cleanup tempfile
+        self.log.info("Cleaning up tempdir %s" % bdir)
+        shutil.rmtree(bdir)

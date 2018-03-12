@@ -19,9 +19,12 @@ class Cluster(object):
         home, _ = self.ssh.remote_cmd("echo $HOME")
         self.log.debug("$HOME is %s" % home)
 
-        if "~" or "$HOME" in path:
+        if ('~' or '$HOME') in path:
             tokens = path.split("/")[1::]
             out = os.path.join(home,'/'.join(tokens))
+            self.log.debug("transformed path %s to %s" % (path, out))
+        elif path == '.':
+            out = home
         else:
             out = path
 
