@@ -9,5 +9,5 @@ from vc3remotemanager.bosco import Bosco
 
 def main():
     """
-    Do some stuff
+    Initialization stuff
     """

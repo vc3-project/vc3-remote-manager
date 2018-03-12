@@ -25,7 +25,8 @@ class Bosco(object):
             tag = None, 
             cachedir = "/tmp/bosco", 
             installdir = "~/.condor", 
-            sandbox = None):
+            sandbox = None,
+            patchset = None):
         self.cluster    = Cluster
         self.ssh        = SSHManager
         self.lrms       = lrms
@@ -33,6 +34,7 @@ class Bosco(object):
         self.repository = repository
         self.tag        = tag
         self.cachedir   = cachedir
+        self.patchset   = patchset
         self.log        = logging.getLogger(__name__)
 
         try:
@@ -193,6 +195,40 @@ class Bosco(object):
         with self.ssh.sftp.open(cfgfile, 'wb') as f:
             f.write(c)
 
+    def apply_patches(self, tempdir):
+        """
+        Apply patches to address resource-specific quirks.
+        """
+        self.log.info("Applying patch set %s to installation on %s ..." % (self.patchset, self.ssh.host))
+        # after a hard think, we'll just replace the files on the remote side
+        # instead of using patch(1). 
+        r = os.path.abspath(os.path.dirname(__file__))
+        patchdir = os.path.join(r, '../patches') # this seems brittle?
+
+        # we also need the specific patches for this version of bosco
+        # and the particular resource we're applying a patch against
+        p = os.path.abspath(os.path.join(patchdir,self.version,self.patchset))
+        self.log.debug("Fully formed patch path is: %s" % p)
+        try: 
+            os.stat(p) 
+            t = self.create_tarball(os.path.join(tempdir,self.patchset), os.path.join(p,"glite"))
+            dst = self.cluster.resolve_path(self.installdir + "/bosco/") + os.path.basename(t) 
+
+            self.log.debug("Source is %s, Destination is %s" % (t,dst))
+            try: 
+                self.ssh.sftp.put(t, dst)
+                out, err = self.ssh.remote_cmd("tar -xzf " + dst + " -C " + self.installdir + "/bosco" )
+            except:
+                self.log.debug("Couldn't transfer %s to %s!" % (t, dst))
+
+            self.log.info("Deleting temporary file %s" % dst)
+            self.ssh.sftp.remove(dst)
+            
+        except OSError:
+            self.log.debug("Couldn't open the patchset, something probably went wrong...", p)
+
+        
+
     def setup_bosco(self):
         self.log.info("Retrieving BOSCO tarballs from FTP...")
         self.cache_tarballs()
@@ -230,11 +266,15 @@ class Bosco(object):
         self.log.info("Deleting temporary file %s" % dst)
         self.ssh.sftp.remove(dst)
 
-        """
-        Add configuration for the site
-        """
+        # configure file transfer gahp daemon
         self.config_ft_gahp()
 
+        # apply patches for the site
+        if self.patchset is not None:
+            self.apply_patches(bdir)
+        else:
+            self.log.debug("No patches to apply, moving on...")
+
         # cleanup tempfile
-        self.log.info("Cleaning up tempdir %s" % bdir)
-        shutil.rmtree(bdir)
+        #self.log.info("Cleaning up tempdir %s" % bdir)
+        #shutil.rmtree(bdir)
