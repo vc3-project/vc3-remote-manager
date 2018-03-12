@@ -16,7 +16,16 @@ except ImportError:
      from urlparse import urlparse
 
 class Bosco(object):
-    def __init__(self, Cluster, SSHManager, lrms, version, repository, tag, cachedir, installdir, sandbox):
+    def __init__(self, 
+            Cluster = None, 
+            SSHManager = None, 
+            lrms = None, 
+            version = "1.2.10",
+            repository = "ftp://ftp.cs.wisc.edu/condor/bosco", 
+            tag = None, 
+            cachedir = "/tmp/bosco", 
+            installdir = "~/.condor", 
+            sandbox = None):
         self.cluster    = Cluster
         self.ssh        = SSHManager
         self.lrms       = lrms
@@ -39,6 +48,16 @@ class Bosco(object):
         else:
             self.sandbox = sandbox
             self.log.debug("Sandbox directory is %s" % self.sandbox)
+
+        if lrms is None:
+            self.log.debug("Missing required option lrms: %s" % self.lrms)
+            raise
+        if Cluster is None:
+            self.log.debug("Missing required option Cluster: %s" % self.cluster)
+            raise
+        if SSHManager is None:
+            self.log.debug("Missing required option SSHManager: %s" % self.ssh)
+            raise
 
         self.etcdir = self.installdir + "/bosco/glite/etc"
 

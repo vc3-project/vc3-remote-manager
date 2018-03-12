@@ -29,6 +29,8 @@ if __name__ == '__main__':
         help="Login name of the user on the remote host (default: $USER)", 
         default=os.environ['USER'])
 
+    parser.add_argument("lrms", action="store", help="Remote batch system to configure")
+
     parser.add_argument("-r", "--repository", action="store", 
         help="BOSCO repository location (default: ftp://ftp.cs.wisc.edu/condor/bosco)",
         default="ftp://ftp.cs.wisc.edu/condor/bosco")
@@ -80,7 +82,7 @@ if __name__ == '__main__':
     to the remote side
     """
     log.info("Retrieving BOSCO files...")
-    b = Bosco(cluster, ssh, "condor", args.bosco_version, args.repository, args.tag, args.cachedir, args.installdir, args.sandbox)
+    b = Bosco(cluster, ssh, args.lrms, args.bosco_version, args.repository, args.tag, args.cachedir, args.installdir, args.sandbox)
     b.setup_bosco()
 
     """
