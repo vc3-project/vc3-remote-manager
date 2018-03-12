@@ -4,8 +4,6 @@ Requirements:
  * keybased auth is already setup between hosts
  * you can write to `/tmp/bosco`
  * you can mktemp dirs in `/tmp`
- *  a `condor_schedd` is running on the local side
-
 
 Sample invocation:
     ```
