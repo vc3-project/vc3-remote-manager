@@ -49,6 +49,8 @@ if __name__ == '__main__':
     parser.add_argument("-s", "--sandbox", action="store", 
         help="Sandbox directory (default: $installdir/bosco/sandbox)",
         default=None)
+    parser.add_argument("-P", "--patchset", action="store",
+        help="Resource-specific patchset", default=None)
 
     args = parser.parse_args()
 
@@ -82,7 +84,7 @@ if __name__ == '__main__':
     to the remote side
     """
     log.info("Retrieving BOSCO files...")
-    b = Bosco(cluster, ssh, args.lrms, args.bosco_version, args.repository, args.tag, args.cachedir, args.installdir, args.sandbox)
+    b = Bosco(cluster, ssh, args.lrms, args.bosco_version, args.repository, args.tag, args.cachedir, args.installdir, args.sandbox, args.patchset)
     b.setup_bosco()
 
     """
