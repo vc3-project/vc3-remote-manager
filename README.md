@@ -7,7 +7,8 @@ Requirements:
 
 Sample invocation:
     ```
-    ./vc3-remote-manager.py login03.osgconnect.net --installdir . -v
+    python setup.py --user
+    ./scripts/vc3-remote-manager.py login03.osgconnect.net --installdir . -v
     ```
 
 will install to `~/bosco` on the remote side, and configure `~/bosco/etc/condor_ft-gahp.config` appropriately.
