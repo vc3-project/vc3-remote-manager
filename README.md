@@ -11,7 +11,7 @@ python setup.py --user
 ./scripts/vc3-remote-manager.py login03.osgconnect.net condor -v
 ```
 
-will install to `~/bosco` on the remote side, and configure `~/bosco/etc/condor_ft-gahp.config` appropriately.
+will install to `~/.condor/bosco` on the remote side, and configure `~/.condor/bosco/etc/condor_ft-gahp.config` appropriately.
 
 You can then submit test jobs like so:
 
@@ -19,7 +19,7 @@ You can then submit test jobs like so:
 universe = grid
 executable = /bin/whoami
 transfer_executable = false
-grid_resource = batch condor login03.osgconnect.net --rgahp-glite /home/lincolnb/bosco/glite --rgahp-nokey
+grid_resource = batch condor login03.osgconnect.net --rgahp-glite /home/lincolnb/.condor/bosco/glite --rgahp-nokey
 output = $(Cluster).$(Process).out
 error = $(Cluster).$(Process).err
 log = $(Cluster).log
