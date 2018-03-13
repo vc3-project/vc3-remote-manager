@@ -51,6 +51,8 @@ if __name__ == '__main__':
         default=None)
     parser.add_argument("-P", "--patchset", action="store",
         help="Resource-specific patchset", default=None)
+    parser.add_argument("-R", "--remote-distro", action="store",
+        help="Remote distro override (default: autoconfigured)", default=None)
 
     args = parser.parse_args()
 
@@ -84,7 +86,7 @@ if __name__ == '__main__':
     to the remote side
     """
     log.info("Retrieving BOSCO files...")
-    b = Bosco(cluster, ssh, args.lrms, args.bosco_version, args.repository, args.tag, args.cachedir, args.installdir, args.sandbox, args.patchset)
+    b = Bosco(cluster, ssh, args.lrms, args.bosco_version, args.repository, args.tag, args.cachedir, args.installdir, args.sandbox, args.patchset, args.remote_distro)
     b.setup_bosco()
 
     """

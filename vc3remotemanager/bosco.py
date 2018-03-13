@@ -26,7 +26,8 @@ class Bosco(object):
             cachedir = "/tmp/bosco", 
             installdir = "~/.condor", 
             sandbox = None,
-            patchset = None):
+            patchset = None,
+            rdistro = None):
         self.cluster    = Cluster
         self.ssh        = SSHManager
         self.lrms       = lrms
@@ -35,6 +36,7 @@ class Bosco(object):
         self.tag        = tag
         self.cachedir   = cachedir
         self.patchset   = patchset
+        self.rdistro    = rdistro
         self.log        = logging.getLogger(__name__)
 
         try:
@@ -233,7 +235,12 @@ class Bosco(object):
         self.log.info("Retrieving BOSCO tarballs from FTP...")
         self.cache_tarballs()
 
-        distro = self.cluster.resolve_platform()
+        if self.rdistro is not None:
+            distro = self.rdistro
+        else:
+            self.log.debug("No distro override configured, proceeding as normal...")
+            distro = self.cluster.resolve_platform()
+
         self.log.info("Extracting BOSCO files for platform %s" % distro)
         bdir = self.extract_blahp(distro)
         if self.tag is not None:
