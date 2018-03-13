@@ -283,5 +283,5 @@ class Bosco(object):
             self.log.debug("No patches to apply, moving on...")
 
         # cleanup tempfile
-        #self.log.info("Cleaning up tempdir %s" % bdir)
-        #shutil.rmtree(bdir)
+        self.log.info("Cleaning up tempdir %s" % bdir)
+        shutil.rmtree(bdir)
