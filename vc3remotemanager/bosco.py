@@ -292,7 +292,7 @@ class Bosco(object):
             entry = self.ssh.login + "@" + self.ssh.host
             s = "entry=%s max_queueud=%d cluster_type=%s " % (entry, -1, self.lrms)
             self.log.info("Writing cluster entry %s to %s:" % (s, self.clusterlist))
-            f.write(s)
+            f.write(s + "\n")
             
         # cleanup tempfile
         self.log.info("Cleaning up tempdir %s" % bdir)
