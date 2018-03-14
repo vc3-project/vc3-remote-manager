@@ -9,7 +9,7 @@ class Cluster(object):
         """
         Setup the logger
         """
-        self.log = logging.getLogger(__name__) 
+        self.log = logging.getLogger(__name__)
         self.ssh = SSHManager
 
     def resolve_path(self,path):

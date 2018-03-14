@@ -1,5 +1,6 @@
 import logging
 import paramiko
+import sys
 
 class SSHManager(object):
     def __init__(self, host, port, login):
@@ -23,7 +24,7 @@ class SSHManager(object):
         Wraps around exec_command for a bit nicer output
         """
         self.log.debug("Executing command %s" % cmd)
-        (stdin,stdout,stderr) = self.client.exec_command(cmd)
+        (_,stdout,stderr) = self.client.exec_command(cmd)
         out = "".join(stdout.readlines()).rstrip()
         err = "".join(stderr.readlines()).rstrip()
 

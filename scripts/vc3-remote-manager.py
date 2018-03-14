@@ -26,7 +26,7 @@ if __name__ == '__main__':
     parser.add_argument("-p", "--port", action="store", 
         help="Port of the remote host (default: 22)", default=22)
     parser.add_argument("-l", "--login", action="store", 
-        help="Login name of the user on the remote host (default: $USER)", 
+        help="Login name of the user on the remote host (default: $USER)",
         default=os.environ['USER'])
 
     parser.add_argument("lrms", action="store", help="Remote batch system to configure")
@@ -34,13 +34,13 @@ if __name__ == '__main__':
     parser.add_argument("-r", "--repository", action="store", 
         help="BOSCO repository location (default: ftp://ftp.cs.wisc.edu/condor/bosco)",
         default="ftp://ftp.cs.wisc.edu/condor/bosco")
-    parser.add_argument("-b", "--bosco-version", action="store", 
+    parser.add_argument("-b", "--bosco-version", action="store",
         help="BOSCO version (default 1.2.10)",
         default="1.2.10")
     parser.add_argument("-c", "--cachedir", action="store", 
         help="local BOSCO tarball cache dir (default: /tmp/bosco)",
         default="/tmp/bosco")
-    parser.add_argument("-i", "--installdir", action="store", 
+    parser.add_argument("-i", "--installdir", action="store",
         help="Remote installation directory (default: ~/.condor)",
         default="~/.condor")
     parser.add_argument("-t", "--tag", action="store", 
@@ -73,18 +73,12 @@ if __name__ == '__main__':
     log.addHandler(hdlr)
     log.setLevel(loglevel)
 
-    ### the magic happens here ###
-
-    """
-    Initialize SSHManager and Cluster classes.
-    """
+    # Initialize SSHManager and Cluster classes.
     ssh = SSHManager(args.host, args.port, args.login)
     cluster = Cluster(ssh)
 
-    """ 
-    Download platform tarballs, extract bosco components, and transfer them
-    to the remote side
-    """
+    # Download platform tarballs, extract bosco components, and transfer them
+    # to the remote side
     log.info("Retrieving BOSCO files...")
     b = Bosco(cluster, ssh, args.lrms, args.bosco_version, args.repository, args.tag, args.cachedir, args.installdir, args.sandbox, args.patchset, args.remote_distro)
     b.setup_bosco()

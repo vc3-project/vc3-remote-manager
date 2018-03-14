@@ -18,12 +18,12 @@ except ImportError:
 class Bosco(object):
     def __init__(self, 
             Cluster = None, 
-            SSHManager = None, 
-            lrms = None, 
+            SSHManager = None,
+            lrms = None,
             version = "1.2.10",
             repository = "ftp://ftp.cs.wisc.edu/condor/bosco", 
             tag = None, 
-            cachedir = "/tmp/bosco", 
+            cachedir = "/tmp/bosco",
             installdir = "~/.condor", 
             sandbox = None,
             patchset = None,
@@ -55,13 +55,10 @@ class Bosco(object):
 
         if lrms is None:
             self.log.debug("Missing required option lrms: %s" % self.lrms)
-            raise
         if Cluster is None:
             self.log.debug("Missing required option Cluster: %s" % self.cluster)
-            raise
         if SSHManager is None:
             self.log.debug("Missing required option SSHManager: %s" % self.ssh)
-            raise
 
         self.etcdir = self.installdir + "/bosco/glite/etc"
 
@@ -127,10 +124,10 @@ class Bosco(object):
         # open the tarball, extract blahp_files and blahp_dirs to tmp
         with TarFile.open(tarfile) as t:
             members = []
-            for file in blahp_files:
-                members.append(t.getmember(os.path.join(cdir,file)))
-            for dir in blahp_dirs:
-                match = os.path.join(cdir, dir)
+            for f in blahp_files:
+                members.append(t.getmember(os.path.join(cdir,f)))
+            for d in blahp_dirs:
+                match = os.path.join(cdir, d)
                 files = [t.getmember(s) for s in t.getnames() if re.match(match, s)]
                 members.extend(files)
 
@@ -203,7 +200,7 @@ class Bosco(object):
         """
         self.log.info("Applying patch set %s to installation on %s ..." % (self.patchset, self.ssh.host))
         # after a hard think, we'll just replace the files on the remote side
-        # instead of using patch(1). 
+        # instead of using patch(1).
         r = os.path.abspath(os.path.dirname(__file__))
         patchdir = os.path.join(r, '../patches') # this seems brittle?
 
@@ -212,7 +209,7 @@ class Bosco(object):
         p = os.path.abspath(os.path.join(patchdir,self.version,self.patchset))
         self.log.debug("Fully formed patch path is: %s" % p)
         try: 
-            os.stat(p) 
+            os.stat(p)
             t = self.create_tarball(os.path.join(tempdir,self.patchset), os.path.join(p,"glite"))
             dst = self.cluster.resolve_path(self.installdir + "/bosco/") + os.path.basename(t) 
 
