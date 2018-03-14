@@ -1,3 +1,6 @@
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/bc14b84f503946f8a9d352af14f23631)](https://app.codacy.com/app/LincolnBryant/vc3-remote-manager?utm_source=github.com&utm_medium=referral&utm_content=vc3-project/vc3-remote-manager&utm_campaign=badger)
+
 Requirements:
  * `python-paramiko` package is installed
  * target is one of RedHat6, RedHat7, Ubuntu14, Ubuntu16, Debian6, Debian7
