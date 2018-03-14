@@ -21,23 +21,25 @@ class Bosco(object):
             SSHManager = None,
             lrms = None,
             version = "1.2.10",
-            repository = "ftp://ftp.cs.wisc.edu/condor/bosco", 
+            repository = "ftp://ftp.cs.wisc.edu/condor/bosco",
             tag = None,
             cachedir = "/tmp/bosco",
             installdir = "~/.condor",
             sandbox = None,
             patchset = None,
-            rdistro = None):
-        self.cluster    = Cluster
-        self.ssh        = SSHManager
-        self.lrms       = lrms
-        self.version    = version
-        self.repository = repository
-        self.tag        = tag
-        self.cachedir   = cachedir
-        self.patchset   = patchset
-        self.rdistro    = rdistro
-        self.log        = logging.getLogger(__name__)
+            rdistro = None,
+            clusterlist = None):
+        self.cluster     = Cluster
+        self.ssh         = SSHManager
+        self.lrms        = lrms
+        self.version     = version
+        self.repository  = repository
+        self.tag         = tag
+        self.cachedir    = cachedir
+        self.patchset    = patchset
+        self.rdistro     = rdistro
+        self.clusterlist = clusterlist
+        self.log         = logging.getLogger(__name__)
 
         try:
             self.installdir = self.cluster.resolve_path(installdir)
@@ -46,12 +48,17 @@ class Bosco(object):
             self.log.warn("Couldn't resolve installdir.. things might not work")
             self.installdir = installdir
 
+            self.clusterlist = os.path.join(self.cachedir, ".clusterlist")
+
         if sandbox is None:
             self.sandbox = os.path.join(self.installdir,"bosco/sandbox")
             self.log.debug("Sandbox directory not specified, defaulting to %s" % self.sandbox)
         else:
             self.sandbox = sandbox
             self.log.debug("Sandbox directory is %s" % self.sandbox)
+
+        if self.clusterlist is None:
+            self.clusterlist = os.path.join(self.cachedir, ".clusterlist")
 
         if lrms is None:
             self.log.debug("Missing required option lrms: %s" % self.lrms)
@@ -138,8 +145,8 @@ class Bosco(object):
         # make some directories
         dirs = [ 'bosco/glite/log', 'bosco/sandbox' ]
         self.log.debug("Creating BOSCO directories...")
-        for dir in dirs:
-            os.makedirs(os.path.join(tempdir, dir))
+        for d in dirs:
+            os.makedirs(os.path.join(tempdir, d))
 
         # list of files and directories that need to move from the extracted tarball to the bosco dir
         to_move = (
@@ -216,7 +223,9 @@ class Bosco(object):
             self.log.debug("Source is %s, Destination is %s" % (t,dst))
             try: 
                 self.ssh.sftp.put(t, dst)
-                out, _ = self.ssh.remote_cmd("tar -xzf " + dst + " -C " + self.installdir + "/bosco" )
+                _, err =self.ssh.remote_cmd("tar -xzf " + dst + " -C " + self.installdir + "/bosco" )
+                if err is not '':
+                    self.log.debug(err)
             except:
                 self.log.debug("Couldn't transfer %s to %s!" % (t, dst))
 
@@ -259,10 +268,10 @@ class Bosco(object):
         except Exception as e:
             self.log.error("Couldn't transfer %s to %s!" % (src, self.ssh.host + ":" + dst))
             self.log.debug(e)
-            raise 
+            raise
 
         self.log.info("Extracting %s to %s" % ((self.ssh.host + ":" + dst),self.installdir))
-        out, err = self.ssh.remote_cmd("tar -xzf " + dst + " -C " + self.installdir )
+        _, err = self.ssh.remote_cmd("tar -xzf " + dst + " -C " + self.installdir )
         if err is not '':
             self.log.debug(err)
         self.log.info("Deleting temporary file %s" % dst)
@@ -277,6 +286,25 @@ class Bosco(object):
         else:
             self.log.debug("No patches to apply, moving on...")
 
+        
+        # entry=ruc.mwt2@mwt2-gk.campuscluster.illinois.edu max_queued=-1 cluster_type=condor
+        with open(self.clusterlist, 'a+') as f:
+            entry = self.ssh.login + "@" + self.ssh.host
+            s = "entry=%s max_queueud=%d cluster_type=%s " % (entry, -1, self.lrms)
+            self.log.info("Writing cluster entry %s to %s:" % (s, self.clusterlist))
+            f.write(s)
+            
         # cleanup tempfile
         self.log.info("Cleaning up tempdir %s" % bdir)
         shutil.rmtree(bdir)
+
+    def get_clusters(self):
+        """
+        return a list of clusters
+        """
+        # example:
+        # entry=ruc.mwt2@mwt2-gk.campuscluster.illinois.edu max_queued=-1 cluster_type=condor
+        with open(self.clusterlist, 'r') as f:
+            clusters = f.read()
+        # i'll come back to this later
+        return clusters    
