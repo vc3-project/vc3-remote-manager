@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
     parser.add_argument("lrms", action="store", help="Remote batch system to configure")
 
-    parser.add_argument("-r", "--repository", action="store", 
+    parser.add_argument("-r", "--repository", action="store",
         help="BOSCO repository location (default: ftp://ftp.cs.wisc.edu/condor/bosco)",
         default="ftp://ftp.cs.wisc.edu/condor/bosco")
     parser.add_argument("-b", "--bosco-version", action="store",
@@ -45,13 +45,16 @@ if __name__ == '__main__':
     parser.add_argument("-t", "--tag", action="store",
         help="Request tag hook (default: None)",
         default=None)
-    parser.add_argument("-s", "--sandbox", action="store", 
+    parser.add_argument("-s", "--sandbox", action="store",
         help="Sandbox directory (default: $installdir/bosco/sandbox)",
         default=None)
     parser.add_argument("-P", "--patchset", action="store",
         help="Resource-specific patchset", default=None)
     parser.add_argument("-R", "--remote-distro", action="store",
         help="Remote distro override (default: autoconfigured)", default=None)
+    parser.add_argument("-L", "--clusterlist", action="store",
+        help="location of the cluster list file (default: $cachedir/.clusterlist)",
+        default=None)
 
     args = parser.parse_args()
 
@@ -79,11 +82,9 @@ if __name__ == '__main__':
     # Download platform tarballs, extract bosco components, and transfer them
     # to the remote side
     log.info("Retrieving BOSCO files...")
-    b = Bosco(cluster, ssh, args.lrms, args.bosco_version, args.repository, args.tag, args.cachedir, args.installdir, args.sandbox, args.patchset, args.remote_distro)
+    b = Bosco(cluster, ssh, args.lrms, args.bosco_version, args.repository, args.tag, args.cachedir, args.installdir, args.sandbox, args.patchset, args.remote_distro, args.clusterlist)
     b.setup_bosco()
 
-    """
-    Close any remaining connections and clean up any temporary files
-    """
+    # Close any remaining connections and clean up any temporary files
     log.info("Terminating SSH connections...")
     ssh.cleanup()
