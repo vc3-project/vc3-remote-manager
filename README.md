@@ -1,4 +1,4 @@
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/3df05a30a7234a19a7b74debc1a60658)](https://www.codacy.com/app/LincolnBryant/vc3-remote-manager?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=vc3-project/vc3-remote-manager&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/bc14b84f503946f8a9d352af14f23631)](https://app.codacy.com/app/LincolnBryant/vc3-remote-manager?utm_source=github.com&utm_medium=referral&utm_content=vc3-project/vc3-remote-manager&utm_campaign=badger)
 
 Requirements:
  * `python-paramiko` package is installed
