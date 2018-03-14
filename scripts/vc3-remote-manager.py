@@ -5,7 +5,6 @@ from __future__ import print_function
 import argparse
 import logging
 import os
-import shutil
 import sys
 
 from vc3remotemanager.ssh import SSHManager
@@ -20,12 +19,12 @@ if __name__ == '__main__':
         help="Set logger to INFO")
     parser.add_argument("-d", "--debug", action="store_true",
         help="Set logger to DEBUG")
-    
-    parser.add_argument("host", action="store", 
+
+    parser.add_argument("host", action="store",
         help="Hostname of the remote batch system")
-    parser.add_argument("-p", "--port", action="store", 
+    parser.add_argument("-p", "--port", action="store",
         help="Port of the remote host (default: 22)", default=22)
-    parser.add_argument("-l", "--login", action="store", 
+    parser.add_argument("-l", "--login", action="store",
         help="Login name of the user on the remote host (default: $USER)",
         default=os.environ['USER'])
 
@@ -37,13 +36,13 @@ if __name__ == '__main__':
     parser.add_argument("-b", "--bosco-version", action="store",
         help="BOSCO version (default 1.2.10)",
         default="1.2.10")
-    parser.add_argument("-c", "--cachedir", action="store", 
+    parser.add_argument("-c", "--cachedir", action="store",
         help="local BOSCO tarball cache dir (default: /tmp/bosco)",
         default="/tmp/bosco")
     parser.add_argument("-i", "--installdir", action="store",
         help="Remote installation directory (default: ~/.condor)",
         default="~/.condor")
-    parser.add_argument("-t", "--tag", action="store", 
+    parser.add_argument("-t", "--tag", action="store",
         help="Request tag hook (default: None)",
         default=None)
     parser.add_argument("-s", "--sandbox", action="store", 

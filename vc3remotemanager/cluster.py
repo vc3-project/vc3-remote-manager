@@ -43,7 +43,7 @@ class Cluster(object):
                 self.ssh.sftp.lstat(path)
                 f = path
                 break
-            except IOError as e:
+            except IOError:
                 f = None
                 self.log.debug("Couldn't open %s, continuing.." % path)
         if f is None:

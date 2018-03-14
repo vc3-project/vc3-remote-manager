@@ -16,15 +16,15 @@ except ImportError:
      from urlparse import urlparse
 
 class Bosco(object):
-    def __init__(self, 
-            Cluster = None, 
+    def __init__(self,
+            Cluster = None,
             SSHManager = None,
             lrms = None,
             version = "1.2.10",
             repository = "ftp://ftp.cs.wisc.edu/condor/bosco", 
-            tag = None, 
+            tag = None,
             cachedir = "/tmp/bosco",
-            installdir = "~/.condor", 
+            installdir = "~/.condor",
             sandbox = None,
             patchset = None,
             rdistro = None):
@@ -148,9 +148,9 @@ class Bosco(object):
             ['libexec/glite/etc', 'bosco/glite/etc'],
             ['sbin/condor_ft-gahp', 'bosco/glite/bin/condor_ft-gahp'] )
 
-        for tuple in to_move:
-            src = os.path.join(tempdir,cdir,tuple[0])
-            dst = os.path.join(tempdir,tuple[1])
+        for t in to_move:
+            src = os.path.join(tempdir,cdir,t[0])
+            dst = os.path.join(tempdir,t[1])
             self.log.debug("Moving %s to %s" % (src,dst))
             shutil.move(src,dst)
 
@@ -208,25 +208,23 @@ class Bosco(object):
         # and the particular resource we're applying a patch against
         p = os.path.abspath(os.path.join(patchdir,self.version,self.patchset))
         self.log.debug("Fully formed patch path is: %s" % p)
-        try: 
+        try:
             os.stat(p)
             t = self.create_tarball(os.path.join(tempdir,self.patchset), os.path.join(p,"glite"))
-            dst = self.cluster.resolve_path(self.installdir + "/bosco/") + os.path.basename(t) 
+            dst = self.cluster.resolve_path(self.installdir + "/bosco/") + os.path.basename(t)
 
             self.log.debug("Source is %s, Destination is %s" % (t,dst))
             try: 
                 self.ssh.sftp.put(t, dst)
-                out, err = self.ssh.remote_cmd("tar -xzf " + dst + " -C " + self.installdir + "/bosco" )
+                out, _ = self.ssh.remote_cmd("tar -xzf " + dst + " -C " + self.installdir + "/bosco" )
             except:
                 self.log.debug("Couldn't transfer %s to %s!" % (t, dst))
 
             self.log.info("Deleting temporary file %s" % dst)
             self.ssh.sftp.remove(dst)
-            
-        except OSError:
-            self.log.debug("Couldn't open the patchset, something probably went wrong...", p)
 
-        
+        except OSError:
+            self.log.debug("Couldn't open the patchset %s, something probably went wrong..." % p)
 
     def setup_bosco(self):
         self.log.info("Retrieving BOSCO tarballs from FTP...")
