@@ -23,5 +23,5 @@ setup(
     packages = ['vc3remotemanager'],
     package_data={'': extra_files},
     include_package_data=True,
-    scripts = ['scripts/vc3-remote-manager.py'],
+    scripts = ['scripts/vc3-remote-manager'],
     )
