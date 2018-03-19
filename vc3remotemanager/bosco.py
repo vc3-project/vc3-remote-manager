@@ -318,7 +318,7 @@ class Bosco(object):
         # example:
         # entry=ruc.mwt2@mwt2-gk.campuscluster.illinois.edu max_queued=-1 cluster_type=condor
         # return:
-        # [['ruc.mwt2@mwt2-gk.campuscluster.illinois.edu','condor'], [...]]
+        # {'lincolnb@uct3-s1.mwt2.org':'condor', ...}
         with open(self.clusterlist, 'r') as f:
             clusters = f.readlines()
             group = {}
