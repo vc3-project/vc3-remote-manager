@@ -55,6 +55,8 @@ if __name__ == '__main__':
     parser.add_argument("-L", "--clusterlist", action="store",
         help="location of the cluster list file (default: $cachedir/.clusterlist)",
         default=None)
+    parser.add_argument("-k","--private-key-file", action="store",
+        help="location of private key file (default: autoconfigured)", default=None)
 
     args = parser.parse_args()
 
@@ -76,7 +78,7 @@ if __name__ == '__main__':
     log.setLevel(loglevel)
 
     # Initialize SSHManager and Cluster classes.
-    ssh = SSHManager(args.host, args.port, args.login)
+    ssh = SSHManager(args.host, args.port, args.login, args.private_key_file)
     cluster = Cluster(ssh)
 
     # Download platform tarballs, extract bosco components, and transfer them
