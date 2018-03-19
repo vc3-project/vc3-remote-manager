@@ -285,26 +285,48 @@ class Bosco(object):
             self.apply_patches(bdir)
         else:
             self.log.debug("No patches to apply, moving on...")
-
         
-        # entry=ruc.mwt2@mwt2-gk.campuscluster.illinois.edu max_queued=-1 cluster_type=condor
-        with open(self.clusterlist, 'a+') as f:
-            entry = self.ssh.login + "@" + self.ssh.host
-            s = "entry=%s max_queueud=%d cluster_type=%s " % (entry, -1, self.lrms)
-            self.log.info("Writing cluster entry %s to %s:" % (s, self.clusterlist))
-            f.write(s + "\n")
+        self.add_cluster()
             
         # cleanup tempfile
         self.log.info("Cleaning up tempdir %s" % bdir)
         shutil.rmtree(bdir)
 
+    def add_cluster(self):  
+        # entry=ruc.mwt2@mwt2-gk.campuscluster.illinois.edu max_queued=-1 cluster_type=condor
+        with open(self.clusterlist, 'a+') as f:
+            # this isnt atomic so... 
+            clusters = self.get_clusters()
+
+            # assemble the entry
+            entry = self.ssh.login + "@" + self.ssh.host
+
+            if entry in clusters:
+                self.log.debug("already in cluster list. skipping duplicate entry")
+            else:
+                s = "entry=%s max_queueud=%d cluster_type=%s " % (entry, -1, self.lrms)
+                self.log.info("Writing cluster entry %s to %s:" % (s, self.clusterlist))
+                try:
+                    f.write(s + "\n")
+                except IOError as e:
+                    self.log.debug("Couldn't write file")
+
     def get_clusters(self):
         """
-        return a list of clusters
+        return a dict of clusters
         """
         # example:
         # entry=ruc.mwt2@mwt2-gk.campuscluster.illinois.edu max_queued=-1 cluster_type=condor
+        # return:
+        # [['ruc.mwt2@mwt2-gk.campuscluster.illinois.edu','condor'], [...]]
         with open(self.clusterlist, 'r') as f:
-            clusters = f.read()
-        # i'll come back to this later
-        return clusters    
+            clusters = f.readlines()
+            group = {}
+            for cluster in clusters:
+                entry = cluster.split(' ')
+                c = []
+                for item in entry:
+                    c += item.split('=')
+                group[c[1]] = c[5]
+        self.log.debug("Cluster dict is %s" % group)
+        return group
