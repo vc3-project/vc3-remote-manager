@@ -13,7 +13,7 @@ extra_files = package_files('patches')
 
 setup(
     name="vc3-remote-manager",
-    version="0.4.0",
+    version="0.5.0",
     description="Tool for installing HTCondor remote GAHP and blahp",
     license='GPL',
     author='VC3 Team',

@@ -11,7 +11,7 @@ from vc3remotemanager.ssh import SSHManager
 from vc3remotemanager.cluster import Cluster
 from vc3remotemanager.bosco import Bosco
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Install BLAHP and manage remote clusters")
