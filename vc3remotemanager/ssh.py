@@ -5,7 +5,7 @@ import sys
 class SSHManager(object):
     def __init__(self, host, port, login, keyfile=None):
         self.login          = login
-        self.port           = port
+        self.port           = int(port)
         self.host           = host
         self.log            = logging.getLogger(__name__)
         self.privatekeyfile = keyfile
