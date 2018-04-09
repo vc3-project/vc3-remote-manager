@@ -56,7 +56,7 @@ cat > $bls_tmp_file << end_of_preamble
 # error = Merged with joblog
 #$ -o joblog.$JOB_ID
 #$ -j y
-#$ -l h_rt=2:00:00,h_data=2G
+#$ -l h_rt=2:00:00,h_data=3G
 end_of_preamble
 
 # Email address to notify
