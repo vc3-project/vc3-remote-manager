@@ -1,2 +1,8 @@
-include patches/*
-include README.md
+include patches/1.2.10/nersc-cori/glite/bin/blah_common_submit_functions.sh
+include patches/1.2.10/nersc-cori/glite/bin/slurm_local_submit_attributes.sh
+include patches/1.2.10/nersc-cori/glite/etc/batch_gahp.config
+include patches/1.2.10/nersc-cori/glite/lib/libcrypto.so.10
+include patches/1.2.10/nersc-cori/glite/lib/libssl.so.10
+include patches/1.2.10/tacc-stampede2/glite/bin/blah_common_submit_functions.sh
+include patches/1.2.10/tacc-stampede2/glite/bin/slurm_submit.sh
+include patches/1.2.10/ucla-hoffman2/glite/bin/sge_helper
