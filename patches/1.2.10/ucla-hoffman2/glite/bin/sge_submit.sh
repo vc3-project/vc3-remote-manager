@@ -56,13 +56,12 @@ cat > $bls_tmp_file << end_of_preamble
 # error = Merged with joblog
 #$ -o joblog.$JOB_ID
 #$ -j y
-#$ -l h_rt=2:00:00,h_data=2G
-end_of_preamble
-
+#$ -l h_rt=2:00:00,h_data=3G
 # Email address to notify
 #$ -M $USER@uchicago.edu
 # Notify when
 #$ -m bea
+end_of_preamble
 
 #local batch system-specific file output must be added to the submit file
 local_submit_attributes_file=${GLITE_LOCATION:-/opt/glite}/bin/sge_local_submit_attributes.sh
