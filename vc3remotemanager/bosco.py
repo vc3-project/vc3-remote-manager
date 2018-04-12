@@ -44,8 +44,8 @@ class Bosco(object):
         try:
             self.installdir = self.cluster.resolve_path(installdir)
             self.log.debug("Installdir is %s" % self.installdir)
-        except:
-            self.log.warn("Couldn't resolve installdir.. things might not work")
+        except Exception as e:
+            self.log.warn("Couldn't resolve installdir.. %s" % e)
             self.installdir = installdir
 
             self.clusterlist = os.path.join(self.cachedir, ".clusterlist")
@@ -221,7 +221,7 @@ class Bosco(object):
             dst = self.cluster.resolve_path(self.installdir + "/bosco/") + os.path.basename(t)
 
             self.log.debug("Source is %s, Destination is %s" % (t,dst))
-            try: 
+            try:
                 self.ssh.sftp.put(t, dst)
                 _, err =self.ssh.remote_cmd("tar -xzf " + dst + " -C " + self.installdir + "/bosco" )
                 if err is not '':
@@ -285,14 +285,14 @@ class Bosco(object):
             self.apply_patches(bdir)
         else:
             self.log.debug("No patches to apply, moving on...")
-        
+
         self.add_cluster()
             
         # cleanup tempfile
         self.log.info("Cleaning up tempdir %s" % bdir)
         shutil.rmtree(bdir)
 
-    def add_cluster(self):  
+    def add_cluster(self):
         # entry=ruc.mwt2@mwt2-gk.campuscluster.illinois.edu max_queued=-1 cluster_type=condor
         with open(self.clusterlist, 'a+') as f:
             # this isnt atomic so... 
@@ -308,8 +308,8 @@ class Bosco(object):
                 self.log.info("Writing cluster entry %s to %s:" % (s, self.clusterlist))
                 try:
                     f.write(s + "\n")
-                except IOError as e:
-                    self.log.debug("Couldn't write file")
+                except IOError:
+                    self.log.debug("Couldn't write file.")
 
     def get_clusters(self):
         """

@@ -11,7 +11,7 @@ class SSHManager(object):
         self.privatekeyfile = keyfile
 
         if self.privatekeyfile is not None:
-            try: 
+            try:
                 k = paramiko.RSAKey.from_private_key_file(self.privatekeyfile)
             except PasswordRequiredException as e:
                 self.log.debug("Private key seems to have a password.. aborting")
