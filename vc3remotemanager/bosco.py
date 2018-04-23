@@ -6,6 +6,7 @@ import logging
 import os
 import re
 import shutil
+import sys
 import tarfile
 import tempfile
 import textwrap
@@ -16,37 +17,28 @@ except ImportError:
      from urlparse import urlparse
 
 class Bosco(object):
-    def __init__(self,
-            Cluster = None,
-            SSHManager = None,
-            lrms = None,
-            version = "1.2.10",
-            repository = "ftp://ftp.cs.wisc.edu/condor/bosco",
-            tag = None,
-            cachedir = "/tmp/bosco",
-            installdir = "~/.condor",
-            sandbox = None,
-            patchset = None,
-            rdistro = None,
-            clusterlist = None):
-        self.cluster     = Cluster
-        self.ssh         = SSHManager
-        self.lrms        = lrms
-        self.version     = version
-        self.repository  = repository
-        self.tag         = tag
-        self.cachedir    = cachedir
-        self.patchset    = patchset
-        self.rdistro     = rdistro
-        self.clusterlist = clusterlist
+    def __init__(self, **kwargs):
+        self.cluster     = kwargs.get('Cluster', None)
+        self.ssh         = kwargs.get('SSHManager', None)
+        self.lrms        = kwargs.get('lrms', None)
+        self.version     = kwargs.get('version', "1.2.10")
+        self.repository  = kwargs.get('repository', "ftp://ftp.cs.wisc.edu/condor/bosco")
+        self.tag         = kwargs.get('tag', None)
+        self.cachedir    = kwargs.get('cachedir', "/tmp/bosco")
+        self.sandbox     = kwargs.get('sandbox', None)
+        self.installdir  = kwargs.get('installdir','~/.condor') #overwrite this later
+        self.patchset    = kwargs.get('patchset', None)
+        self.rdistro     = kwargs.get('rdistro', None)
+        self.clusterlist = kwargs.get('clusterlist', None)
         self.log         = logging.getLogger(__name__)
 
         try:
-            self.installdir = self.cluster.resolve_path(installdir)
+            self.installdir = self.cluster.resolve_path(self.installdir) # is this bad?
             self.log.debug("Installdir is %s" % self.installdir)
         except Exception as e:
             self.log.warn("Couldn't resolve installdir.. %s" % e)
-            self.installdir = installdir
+            sys.exit(1) # we should probably cowardly bail out here
+            #self.installdir = installdir
 
             self.clusterlist = os.path.join(self.cachedir, ".clusterlist")
 
@@ -62,10 +54,13 @@ class Bosco(object):
 
         if lrms is None:
             self.log.debug("Missing required option lrms: %s" % self.lrms)
+            sys.exit(1) 
         if Cluster is None:
             self.log.debug("Missing required option Cluster: %s" % self.cluster)
+            sys.exit(1) 
         if SSHManager is None:
             self.log.debug("Missing required option SSHManager: %s" % self.ssh)
+            sys.exit(1) 
 
         self.etcdir = self.installdir + "/bosco/glite/etc"
 
