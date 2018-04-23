@@ -42,23 +42,22 @@ class Bosco(object):
 
             self.clusterlist = os.path.join(self.cachedir, ".clusterlist")
 
-        if sandbox is None:
+        if self.sandbox is None:
             self.sandbox = os.path.join(self.installdir,"bosco/sandbox")
             self.log.debug("Sandbox directory not specified, defaulting to %s" % self.sandbox)
         else:
-            self.sandbox = sandbox
             self.log.debug("Sandbox directory is %s" % self.sandbox)
 
         if self.clusterlist is None:
             self.clusterlist = os.path.join(self.cachedir, ".clusterlist")
 
-        if lrms is None:
+        if self.lrms is None:
             self.log.debug("Missing required option lrms: %s" % self.lrms)
             sys.exit(1) 
-        if Cluster is None:
+        if self.cluster is None:
             self.log.debug("Missing required option Cluster: %s" % self.cluster)
             sys.exit(1) 
-        if SSHManager is None:
+        if self.ssh is None:
             self.log.debug("Missing required option SSHManager: %s" % self.ssh)
             sys.exit(1) 
 
