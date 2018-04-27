@@ -19,7 +19,6 @@ setup(
     license='GPL',
     author='VC3 Team',
     author_email='vc3-project@googlegroups.com',
-    long_description=open('README.md').read(),
     install_requires=['paramiko'],
     packages = ['vc3remotemanager'],
     package_data={'vc3remotemanager': extra_files},
