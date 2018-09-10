@@ -78,26 +78,30 @@ if __name__ == '__main__':
     log.setLevel(loglevel)
 
     # Initialize SSHManager and Cluster classes.
-    ssh = SSHManager(host=args.host, port=args.port, login=args.login, keyfile=args.private_key_file)
-    cluster = Cluster(ssh)
+    ssh1 = SSHManager(host=args.host, port=args.port, login=args.login, keyfile=args.private_key_file)
+    # SSHception:
+    ssh2 = SSHManager(host="uct2-gk.mwt2.org", port=22, login=args.login, keyfile=args.private_key_file,parent=ssh1)
+    log.info(ssh2.remote_cmd("hostname; uname -a; whoami"))
+    #cluster = Cluster(ssh2)
 
-    # Download platform tarballs, extract bosco components, and transfer them
-    # to the remote side
-    log.info("Retrieving BOSCO files...")
-    b = Bosco(Cluster=cluster, 
-              SSHManager=ssh, 
-              lrms=args.lrms, 
-              version=args.bosco_version, 
-              repository=args.repository, 
-              tag=args.tag, 
-              cachedir=args.cachedir, 
-              installdir=args.installdir, 
-              sandbox=args.sandbox, 
-              patchset=args.patchset, 
-              rdistro=args.remote_distro, 
-              clusterlist=args.clusterlist)
-    b.setup_bosco()
+    ## Download platform tarballs, extract bosco components, and transfer them
+    ## to the remote side
+    #log.info("Retrieving BOSCO files...")
+    #b = Bosco(Cluster=cluster, 
+    #          SSHManager=ssh2, 
+    #          lrms=args.lrms, 
+    #          version=args.bosco_version, 
+    #          repository=args.repository, 
+    #          tag=args.tag, 
+    #          cachedir=args.cachedir, 
+    #          installdir=args.installdir, 
+    #          sandbox=args.sandbox, 
+    #          patchset=args.patchset, 
+    #          rdistro=args.remote_distro, 
+    #          clusterlist=args.clusterlist)
+    #b.setup_bosco()
 
     # Close any remaining connections and clean up any temporary files
     log.info("Terminating SSH connections...")
-    ssh.cleanup()
+    ssh2.cleanup()
+    ssh1.cleanup()
