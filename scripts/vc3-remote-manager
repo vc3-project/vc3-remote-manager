@@ -89,7 +89,7 @@ if __name__ == '__main__':
     log.setLevel(loglevel)
 
     if args.gateway is not None:
-        log.debug("Using SSH Gateway %s" % args.gateway)
+        log.info("Gateway mode active.. jumping from %s to %s" % (args.gateway, args.host))
         gw = SSHManager(host=args.gateway, port=args.gateway_port, login=args.gateway_login, keyfile=args.gateway_key)
         ssh = SSHManager(host=args.host, port=args.port, login=args.login, keyfile=args.private_key_file, parent=gw)
     else:
