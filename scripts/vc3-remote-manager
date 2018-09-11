@@ -11,7 +11,7 @@ from vc3remotemanager.ssh import SSHManager
 from vc3remotemanager.cluster import Cluster
 from vc3remotemanager.bosco import Bosco
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Install BLAHP and manage remote clusters")
@@ -27,6 +27,17 @@ if __name__ == '__main__':
     parser.add_argument("-l", "--login", action="store",
         help="Login name of the user on the remote host (default: $USER)",
         default=os.environ['USER'])
+
+    parser.add_argument("--gateway", action="store",
+        help="Hostname of the remote gateway host")
+    parser.add_argument("--gateway-port", action="store",
+        help="Port of the remote gateway host (default: 22)", default=22)
+    parser.add_argument("--gateway-login", action="store",
+        help="Login name of the user on the remote host (default: $USER)",
+        default=os.environ['USER'])
+    parser.add_argument("--gateway-key", action="store",
+        help="Private key for the remote gateway host (default: autoconfigured)", default=None)
+
 
     parser.add_argument("lrms", action="store", help="Remote batch system to configure")
 
@@ -77,31 +88,35 @@ if __name__ == '__main__':
     log.addHandler(hdlr)
     log.setLevel(loglevel)
 
-    # Initialize SSHManager and Cluster classes.
-    ssh1 = SSHManager(host=args.host, port=args.port, login=args.login, keyfile=args.private_key_file)
-    # SSHception:
-    ssh2 = SSHManager(host="uct2-gk.mwt2.org", port=22, login=args.login, keyfile=args.private_key_file,parent=ssh1)
-    log.info(ssh2.remote_cmd("hostname; uname -a; whoami"))
-    #cluster = Cluster(ssh2)
+    if args.gateway is not None:
+        log.debug("Using SSH Gateway %s" % args.gateway)
+        gw = SSHManager(host=args.gateway, port=args.gateway_port, login=args.gateway_login, keyfile=args.gateway_key)
+        ssh = SSHManager(host=args.host, port=args.port, login=args.login, keyfile=args.private_key_file, parent=gw)
+    else:
+        ssh = SSHManager(host=args.host, port=args.port, login=args.login, keyfile=args.private_key_file)
+        
 
-    ## Download platform tarballs, extract bosco components, and transfer them
-    ## to the remote side
-    #log.info("Retrieving BOSCO files...")
-    #b = Bosco(Cluster=cluster, 
-    #          SSHManager=ssh2, 
-    #          lrms=args.lrms, 
-    #          version=args.bosco_version, 
-    #          repository=args.repository, 
-    #          tag=args.tag, 
-    #          cachedir=args.cachedir, 
-    #          installdir=args.installdir, 
-    #          sandbox=args.sandbox, 
-    #          patchset=args.patchset, 
-    #          rdistro=args.remote_distro, 
-    #          clusterlist=args.clusterlist)
-    #b.setup_bosco()
+    cluster = Cluster(ssh)
+
+    # Download platform tarballs, extract bosco components, and transfer them
+    # to the remote side
+    log.info("Retrieving BOSCO files...")
+    b = Bosco(Cluster=cluster, 
+              SSHManager=ssh, 
+              lrms=args.lrms, 
+              version=args.bosco_version, 
+              repository=args.repository, 
+              tag=args.tag, 
+              cachedir=args.cachedir, 
+              installdir=args.installdir, 
+              sandbox=args.sandbox, 
+              patchset=args.patchset, 
+              rdistro=args.remote_distro, 
+              clusterlist=args.clusterlist)
+    b.setup_bosco()
 
     # Close any remaining connections and clean up any temporary files
     log.info("Terminating SSH connections...")
-    ssh2.cleanup()
-    ssh1.cleanup()
+    ssh.cleanup()
+    if args.gateway is not None:
+        gw.cleanup()
