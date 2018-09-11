@@ -14,7 +14,7 @@ extra_files = package_files('patches')
 
 setup(
     name="vc3-remote-manager",
-    version="1.0.0",
+    version="1.0.1",
     description="Tool for installing HTCondor remote GAHP and blahp",
     license='GPL',
     author='VC3 Team',

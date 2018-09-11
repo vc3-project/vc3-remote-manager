@@ -11,7 +11,7 @@ from vc3remotemanager.ssh import SSHManager
 from vc3remotemanager.cluster import Cluster
 from vc3remotemanager.bosco import Bosco
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Install BLAHP and manage remote clusters")
@@ -27,6 +27,17 @@ if __name__ == '__main__':
     parser.add_argument("-l", "--login", action="store",
         help="Login name of the user on the remote host (default: $USER)",
         default=os.environ['USER'])
+
+    parser.add_argument("--gateway", action="store",
+        help="Hostname of the remote gateway host")
+    parser.add_argument("--gateway-port", action="store",
+        help="Port of the remote gateway host (default: 22)", default=22)
+    parser.add_argument("--gateway-login", action="store",
+        help="Login name of the user on the remote host (default: $USER)",
+        default=os.environ['USER'])
+    parser.add_argument("--gateway-key", action="store",
+        help="Private key for the remote gateway host (default: autoconfigured)", default=None)
+
 
     parser.add_argument("lrms", action="store", help="Remote batch system to configure")
 
@@ -77,8 +88,14 @@ if __name__ == '__main__':
     log.addHandler(hdlr)
     log.setLevel(loglevel)
 
-    # Initialize SSHManager and Cluster classes.
-    ssh = SSHManager(host=args.host, port=args.port, login=args.login, keyfile=args.private_key_file)
+    if args.gateway is not None:
+        log.info("Gateway mode active.. jumping from %s to %s" % (args.gateway, args.host))
+        gw = SSHManager(host=args.gateway, port=args.gateway_port, login=args.gateway_login, keyfile=args.gateway_key)
+        ssh = SSHManager(host=args.host, port=args.port, login=args.login, keyfile=args.private_key_file, parent=gw)
+    else:
+        ssh = SSHManager(host=args.host, port=args.port, login=args.login, keyfile=args.private_key_file)
+        
+
     cluster = Cluster(ssh)
 
     # Download platform tarballs, extract bosco components, and transfer them
@@ -101,3 +118,5 @@ if __name__ == '__main__':
     # Close any remaining connections and clean up any temporary files
     log.info("Terminating SSH connections...")
     ssh.cleanup()
+    if args.gateway is not None:
+        gw.cleanup()
