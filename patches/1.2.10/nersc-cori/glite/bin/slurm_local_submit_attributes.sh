@@ -1,6 +1,6 @@
 #! /bin/bash
 
-echo "#SBATCH --image=docker:opensciencegrid/osgvo-el6:latest"
+echo "#SBATCH --image=docker:opensciencegrid/osgvo-el7:latest"
 echo "#SBATCH --module=cvmfs"
 #echo "#SBATCH --image=custom:cms_cvmfs:latest"
 echo "#SBATCH -t 06:00:00"
