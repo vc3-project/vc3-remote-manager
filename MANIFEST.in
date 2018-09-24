@@ -7,3 +7,4 @@ include patches/1.2.10/tacc-stampede2/glite/bin/blah_common_submit_functions.sh
 include patches/1.2.10/tacc-stampede2/glite/bin/slurm_submit.sh
 include patches/1.2.10/ucla-hoffman2/glite/bin/sge_helper
 include patches/1.2.10/ucla-hoffman2/glite/bin/sge_submit.sh
+include patches/1.2.10/cms-connect/glite/bin/condor_local_submit_attributes.sh
