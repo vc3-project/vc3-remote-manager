@@ -49,7 +49,7 @@ cat > $bls_tmp_file << end_of_preamble
 # SLURM directives:
 #SBATCH -o $slurm_std_storage
 #SBATCH -e $slurm_std_storage
-#SBATCH -p normal
+#SBATCH -p skx-normal
 #SBATCH -n 1
 #SBATCH -N 1
 #SBATCH -t 1:00:00
