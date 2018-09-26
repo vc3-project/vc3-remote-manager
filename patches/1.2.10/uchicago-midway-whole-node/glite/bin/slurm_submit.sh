@@ -51,6 +51,8 @@ cat > $bls_tmp_file << end_of_preamble
 #SBATCH -e $slurm_std_storage
 end_of_preamble
 
+blah_debug_save_submit_info="~/.condor"
+
 #local batch system-specific file output must be added to the submit file
 bls_local_submit_attributes_file=${blah_bin_directory}/slurm_local_submit_attributes.sh
 
