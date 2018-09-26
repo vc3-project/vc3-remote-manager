@@ -49,7 +49,6 @@ cat > $bls_tmp_file << end_of_preamble
 # SLURM directives:
 #SBATCH -o $slurm_std_storage
 #SBATCH -e $slurm_std_storage
-#SBATCH -C haswell
 end_of_preamble
 
 if [ "x$bls_opt_project" != "x" ] ; then
@@ -61,7 +60,7 @@ if [ "x$bls_opt_runtime" != "x" ] ; then
 fi
 
 #local batch system-specific file output must be added to the submit file
-bls_local_submit_attributes_file=${blah_libexec_directory}/slurm_local_submit_attributes.sh
+bls_local_submit_attributes_file=${blah_bin_directory}/slurm_local_submit_attributes.sh
 
 # Do the local and extra args after all #SBATCH commands, otherwise slurm ignores anything
 # after a non-#SBATCH command
