@@ -83,7 +83,7 @@ bls_set_up_local_and_extra_args
 bls_add_job_wrapper
 bls_save_submit
 
-cp "$bls_tmp_file" "~/.condor/submit.script"
+cat $bls_tmp_file >> "~/.condor/submit.debug"
 
 ###############################################################
 # Submit the script
