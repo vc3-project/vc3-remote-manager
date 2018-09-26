@@ -61,6 +61,8 @@ bls_local_submit_attributes_file=${blah_bin_directory}/slurm_local_submit_attrib
 # after a non-#SBATCH command
 bls_set_up_local_and_extra_args
 
+bls_opt_queue="kicp"
+
 # Handle queues and paritions (same thing in SLURM) (copied from PBS submit file)
 [ -z "$bls_opt_queue" ] || grep -q "^#SBATCH --partition" $bls_tmp_file || echo "#SBATCH --partition=$bls_opt_queue" >> $bls_tmp_file
 
