@@ -57,6 +57,10 @@ bls_tmp_name="testing"
 #local batch system-specific file output must be added to the submit file
 bls_local_submit_attributes_file=${blah_bin_directory}/slurm_local_submit_attributes.sh
 
+# Do the local and extra args after all #SBATCH commands, otherwise slurm ignores anything
+# after a non-#SBATCH command
+bls_set_up_local_and_extra_args
+
 # Handle queues and paritions (same thing in SLURM) (copied from PBS submit file)
 [ -z "$bls_opt_queue" ] || grep -q "^#SBATCH --partition" $bls_tmp_file || echo "#SBATCH --partition=$bls_opt_queue" >> $bls_tmp_file
 
@@ -73,9 +77,7 @@ if [[ $bls_opt_mpinodes -gt 1 ]] ; then
   echo "#SBATCH --cpus-per-task=$bls_opt_mpinodes" >> $bls_tmp_file
 fi
 
-# Do the local and extra args after all #SBATCH commands, otherwise slurm ignores anything
-# after a non-#SBATCH command
-bls_set_up_local_and_extra_args
+
 
 # Input and output sandbox setup.
 # Assume all filesystems are shared.
