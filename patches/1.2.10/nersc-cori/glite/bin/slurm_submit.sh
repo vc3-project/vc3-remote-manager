@@ -51,6 +51,14 @@ cat > $bls_tmp_file << end_of_preamble
 #SBATCH -e $slurm_std_storage
 end_of_preamble
 
+if [ "x$bls_opt_project" != "x" ] ; then
+  echo "#SBATCH -A $bls_opt_project" >> $bls_tmp_file
+fi
+
+if [ "x$bls_opt_runtime" != "x" ] ; then
+  echo "#SBATCH -t $((bls_opt_runtime / 60))" >> $bls_tmp_file
+fi
+
 #local batch system-specific file output must be added to the submit file
 bls_local_submit_attributes_file=${blah_libexec_directory}/slurm_local_submit_attributes.sh
 
@@ -78,7 +86,7 @@ bls_set_up_local_and_extra_args
 # Assume all filesystems are shared.
 
 bls_add_job_wrapper
-bls_save_submit
+# bls_save_submit
 
 ###############################################################
 # Submit the script
