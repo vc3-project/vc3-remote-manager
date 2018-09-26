@@ -49,6 +49,7 @@ cat > $bls_tmp_file << end_of_preamble
 # SLURM directives:
 #SBATCH -o $slurm_std_storage
 #SBATCH -e $slurm_std_storage
+#SBATCH -C haswell
 end_of_preamble
 
 if [ "x$bls_opt_project" != "x" ] ; then
