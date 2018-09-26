@@ -798,6 +798,26 @@ function bls_wrap_up_submit ()
     fi
   fi
 
+
+  bls_fl_clear inputsand
+  bls_fl_clear outputsand
+  bls_fl_clear inputcopy
+  bls_fl_clear outputmove
+
+  # Clean temporary files
+  cd $bls_opt_temp_dir
+  # DEBUG: cp $bls_tmp_file /tmp
+  rm -f $bls_tmp_file
+  
+  if [ "x$job_registry" == "x" ]; then
+    # Create a softlink to proxy file for proxy renewal
+    if [ -r "$bls_proxy_local_file" -a -f "$bls_proxy_local_file" ] ; then
+        [ -d "$bls_proxy_dir" ] || mkdir $bls_proxy_dir
+        ln -s $bls_proxy_local_file $bls_proxy_dir/$jobID.proxy
+    fi
+  fi
+}
+
 function bls_save_submit () 
 {
     if [ -d "$blah_debug_save_submit_info" -a -n "$bls_tmp_name" ]; then
@@ -828,23 +848,4 @@ function bls_save_submit ()
             fi
         fi
     fi    
-}
-
-  bls_fl_clear inputsand
-  bls_fl_clear outputsand
-  bls_fl_clear inputcopy
-  bls_fl_clear outputmove
-
-  # Clean temporary files
-  cd $bls_opt_temp_dir
-  # DEBUG: cp $bls_tmp_file /tmp
-  rm -f $bls_tmp_file
-  
-  if [ "x$job_registry" == "x" ]; then
-    # Create a softlink to proxy file for proxy renewal
-    if [ -r "$bls_proxy_local_file" -a -f "$bls_proxy_local_file" ] ; then
-        [ -d "$bls_proxy_dir" ] || mkdir $bls_proxy_dir
-        ln -s $bls_proxy_local_file $bls_proxy_dir/$jobID.proxy
-    fi
-  fi
-}
+}   
