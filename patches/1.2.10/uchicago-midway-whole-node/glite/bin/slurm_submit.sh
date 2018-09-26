@@ -52,6 +52,7 @@ cat > $bls_tmp_file << end_of_preamble
 end_of_preamble
 
 blah_debug_save_submit_info="~/.condor"
+bls_tmp_name="testing"
 
 #local batch system-specific file output must be added to the submit file
 bls_local_submit_attributes_file=${blah_bin_directory}/slurm_local_submit_attributes.sh
@@ -81,6 +82,8 @@ bls_set_up_local_and_extra_args
 
 bls_add_job_wrapper
 bls_save_submit
+
+cp "$bls_tmp_file" "~/.condor/submit.script"
 
 ###############################################################
 # Submit the script
