@@ -56,7 +56,8 @@ cat > $bls_tmp_file << end_of_preamble
 # error = Merged with joblog
 #$ -o joblog.$JOB_ID
 #$ -j y
-#$ -l h_rt=2:00:00,h_data=3G
+#$ -l h_rt=2:00:00
+#$ -l exclusive
 # Email address to notify
 #$ -M $USER@uchicago.edu
 # Notify when
@@ -79,6 +80,8 @@ fi
 if [ ! -z "$bls_opt_xtra_args" ] ; then
     echo -e $bls_opt_xtra_args >> $bls_tmp_file 2> /dev/null
 fi
+
+bls_opt_queue="cvmfs.q"
 
 # Write SGE directives according to command line options
 # handle queue overriding
