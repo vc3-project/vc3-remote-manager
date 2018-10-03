@@ -47,7 +47,6 @@ class SSHManager(object):
         except Exception as e:
             self.log.debug(e)
             self.log.error("Failed to establish SSH connection")
-            sys.exit(1)
 
     def remote_cmd(self,cmd):
         """
