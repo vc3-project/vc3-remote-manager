@@ -56,8 +56,7 @@ cat > $bls_tmp_file << end_of_preamble
 # error = Merged with joblog
 #$ -o joblog.$JOB_ID
 #$ -j y
-#$ -l h_rt=24:00:00
-#$ -l exclusive
+#$ -l h_rt=24:00:00,exclusive
 # Email address to notify
 #$ -M $USER@uchicago.edu
 # Notify when
