@@ -53,13 +53,10 @@ class Bosco(object):
 
         if self.lrms is None:
             self.log.debug("Missing required option lrms: %s" % self.lrms)
-            sys.exit(1)
         if self.cluster is None:
             self.log.debug("Missing required option Cluster: %s" % self.cluster)
-            sys.exit(1)
         if self.ssh is None:
             self.log.debug("Missing required option SSHManager: %s" % self.ssh)
-            sys.exit(1)
 
         self.etcdir = self.installdir + "/bosco/glite/etc"
 
