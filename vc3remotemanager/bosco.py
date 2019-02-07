@@ -286,10 +286,10 @@ class Bosco(object):
     def add_cluster(self):
         openMode = 'a+'
         try:
-            os.stat(self.cachelist)
-        except FileNotFoundError:
-            if os.path.isdir(cachedir) == False:
-                os.mkdir(cachedir)
+            os.stat(self.clusterlist)
+        except OSError:
+            if os.path.isdir(self.cachedir) == False:
+                os.mkdir(self.cachedir)
             openMode = 'w+'
 
         # entry=ruc.mwt2@mwt2-gk.campuscluster.illinois.edu max_queued=-1 cluster_type=condor
@@ -320,10 +320,10 @@ class Bosco(object):
         # {'lincolnb@uct3-s1.mwt2.org':'condor', ...}
         openMode = 'r'
         try:
-            os.stat(self.cachelist)
-        except FileNotFoundError:
-            if os.path.isdir(cachedir) == False:
-                os.mkdir(cachedir)
+            os.stat(self.clusterlist)
+        except OSError:
+            if os.path.isdir(self.cachedir) == False:
+                os.mkdir(self.cachedir)
             openMode = 'w+'
 
         with open(self.clusterlist, openMode) as f:
