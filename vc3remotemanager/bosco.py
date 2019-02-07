@@ -287,8 +287,16 @@ class Bosco(object):
         shutil.rmtree(bdir)
 
     def add_cluster(self):
+        openMode = 'a+'
+        try:
+            os.stat(self.cachelist)
+        except FileNotFoundError:
+            if os.path.isdir(cachedir) == False:
+                os.mkdir(cachedir)
+            openMode = 'w+'
+
         # entry=ruc.mwt2@mwt2-gk.campuscluster.illinois.edu max_queued=-1 cluster_type=condor
-        with open(self.clusterlist, 'a+') as f:
+        with open(self.clusterlist, openMode) as f:
             # this isnt atomic so...
             clusters = self.get_clusters()
 
@@ -313,11 +321,15 @@ class Bosco(object):
         # entry=ruc.mwt2@mwt2-gk.campuscluster.illinois.edu max_queued=-1 cluster_type=condor
         # return:
         # {'lincolnb@uct3-s1.mwt2.org':'condor', ...}
+        openMode = 'r'
         try:
-            os.mkdir(self.clusterlist)
-        except OSError:
-            continue
-        with open(self.clusterlist, 'r') as f:
+            os.stat(self.cachelist)
+        except FileNotFoundError:
+            if os.path.isdir(cachedir) == False:
+                os.mkdir(cachedir)
+            openMode = 'w+'
+
+        with open(self.clusterlist, openMode) as f:
             clusters = f.readlines()
             group = {}
             for cluster in clusters:
