@@ -53,13 +53,13 @@ class Bosco(object):
 
         if self.lrms is None:
             self.log.debug("Missing required option lrms: %s" % self.lrms)
-            sys.exit(1) 
+            sys.exit(1)
         if self.cluster is None:
             self.log.debug("Missing required option Cluster: %s" % self.cluster)
-            sys.exit(1) 
+            sys.exit(1)
         if self.ssh is None:
             self.log.debug("Missing required option SSHManager: %s" % self.ssh)
-            sys.exit(1) 
+            sys.exit(1)
 
         self.etcdir = self.installdir + "/bosco/glite/etc"
 
@@ -281,7 +281,7 @@ class Bosco(object):
             self.log.debug("No patches to apply, moving on...")
 
         self.add_cluster()
-            
+
         # cleanup tempfile
         self.log.info("Cleaning up tempdir %s" % bdir)
         shutil.rmtree(bdir)
@@ -289,7 +289,7 @@ class Bosco(object):
     def add_cluster(self):
         # entry=ruc.mwt2@mwt2-gk.campuscluster.illinois.edu max_queued=-1 cluster_type=condor
         with open(self.clusterlist, 'a+') as f:
-            # this isnt atomic so... 
+            # this isnt atomic so...
             clusters = self.get_clusters()
 
             # assemble the entry
@@ -313,6 +313,10 @@ class Bosco(object):
         # entry=ruc.mwt2@mwt2-gk.campuscluster.illinois.edu max_queued=-1 cluster_type=condor
         # return:
         # {'lincolnb@uct3-s1.mwt2.org':'condor', ...}
+        try:
+            os.mkdir(self.clusterlist)
+        except OSError:
+            continue
         with open(self.clusterlist, 'r') as f:
             clusters = f.readlines()
             group = {}
