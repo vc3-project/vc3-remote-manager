@@ -19,7 +19,7 @@ setup(
     license='GPL',
     author='VC3 Team',
     author_email='vc3-project@googlegroups.com',
-    install_requires=['paramiko'],
+    install_requires=['paramiko', 'pexpect'],
     packages = ['vc3remotemanager'],
     package_data={'vc3remotemanager': extra_files},
     include_package_data=True,
