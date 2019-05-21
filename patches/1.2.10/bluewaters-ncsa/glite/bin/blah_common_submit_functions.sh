@@ -310,6 +310,9 @@ function bls_parse_submit_options ()
       esac
   done
 
+# Replace # character from opt run dir if present
+bls_opt_run_dir="${bls_opt_run_dir//#/_}"
+
 # Command is mandatory
   if [ "x$bls_opt_the_command" == "x" ]
   then
@@ -622,7 +625,7 @@ function bls_add_job_wrapper ()
   if [ "x$bls_opt_run_dir" != "x" ] ; then
     run_dir="$bls_opt_run_dir"
   else
-    run_dir="home_$bls_tmp_name"
+    run_dir="home_${bls_tmp_name//#/_}"
   fi
   if [ -n "$blah_wn_temporary_home_dir" ] ; then
     echo "new_home=${blah_wn_temporary_home_dir}/$run_dir">>$bls_tmp_file
