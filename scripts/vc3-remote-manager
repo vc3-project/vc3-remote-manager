@@ -8,6 +8,7 @@ import os
 import sys
 
 from vc3remotemanager.ssh import SSHManager
+from vc3remotemanager.gsissh import GSISSHManager
 from vc3remotemanager.cluster import Cluster
 from vc3remotemanager.bosco import Bosco
 
@@ -69,6 +70,9 @@ if __name__ == '__main__':
     parser.add_argument("-k","--private-key-file", action="store",
         help="location of private key file (default: autoconfigured)", default=None)
 
+    parser.add_argument("-x","--x509-proxy", action="store",
+        help="location of private key file (default: autoconfigured)", default=None)
+
     args = parser.parse_args()
 
     if args.debug == True:
@@ -88,13 +92,19 @@ if __name__ == '__main__':
     log.addHandler(hdlr)
     log.setLevel(loglevel)
 
+    # SSH keys have preference over x509 proxies
     if args.gateway is not None:
         log.info("Gateway mode active.. jumping from %s to %s" % (args.gateway, args.host))
         gw = SSHManager(host=args.gateway, port=args.gateway_port, login=args.gateway_login, keyfile=args.gateway_key)
         ssh = SSHManager(host=args.host, port=args.port, login=args.login, keyfile=args.private_key_file, parent=gw)
-    else:
+    elif args.private_key_file:
         ssh = SSHManager(host=args.host, port=args.port, login=args.login, keyfile=args.private_key_file)
-        
+    elif args.x509_proxy is not None:
+        log.info("Using GSISSH mode")
+        ssh = GSISSHManager(host=args.host, port=args.port, login=args.login, x509proxy=args.x509_proxy)
+    else:
+        log.info("Authentication mechanism was not provided. Exiting...")
+        sys.exit(1)
 
     cluster = Cluster(ssh)
 

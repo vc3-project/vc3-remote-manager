@@ -2,15 +2,13 @@ import logging
 import paramiko
 import sys
 import getpass
+from sshbase import SSHBase
 
-class SSHManager(object):
+class SSHManager(SSHBase):
     def __init__(self, **kwargs):
-        self.login          = kwargs.get('login', getpass.getuser())
-        self.port           = kwargs.get('port', '22')
-        self.host           = kwargs.get('host', None)
+        super(SSHManager, self).__init__(**kwargs)
         self.privatekeyfile = kwargs.get('keyfile', None) # paramiko defaults to the usual places
         self.parent         = kwargs.get('parent', None) # Get parent object for nested ssh
-        self.log            = logging.getLogger(__name__)
 
         if self.privatekeyfile is not None:
             try:

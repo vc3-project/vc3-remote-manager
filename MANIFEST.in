@@ -11,3 +11,9 @@ include patches/1.2.10/ucla-hoffman2/glite/bin/sge_submit.sh
 include patches/1.2.10/cms-connect/glite/bin/condor_local_submit_attributes.sh
 include patches/1.2.10/uchicago-midway-whole-node/glite/bin/slurm_submit.sh
 include patches/1.2.10/uchicago-midway-whole-node/glite/bin/blah_common_submit_functions.sh
+include patches/1.2.10/psc-bridges/glite/bin/slurm_local_submit_attributes.sh
+include patches/1.2.10/bluewaters-ncsa/glite/bin/blah_common_submit_functions.sh
+include patches/1.2.10/bluewaters-ncsa/glite/bin/pbs_local_submit_attributes.sh
+include patches/1.2.10/bluewaters-ncsa/glite/etc/batch_gahp.config
+include patches/1.2.10/bluewaters-ncsa/glite/lib/libcrypto.so.10
+include patches/1.2.10/bluewaters-ncsa/glite/lib/libssl.so.10
