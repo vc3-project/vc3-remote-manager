@@ -19,4 +19,3 @@ include patches/1.2.10/bluewaters-ncsa/glite/lib/libcrypto.so.10
 include patches/1.2.10/bluewaters-ncsa/glite/lib/libssl.so.10
 include patches/1.2.10/sdsc-popeye/glite/bin/slurm_submit.sh
 include patches/1.2.10/sdsc-popeye/glite/bin/blah_common_submit_functions.sh
-
