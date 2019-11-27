@@ -175,6 +175,7 @@ class Bosco(object):
         #EOF
 
         installpath = self.cluster.resolve_path(self.installdir)
+        sandboxpath = self.cluster.resolve_path(self.sandbox)
 
         config = """\
             BOSCO_SANDBOX_DIR=%s
@@ -184,7 +185,7 @@ class Bosco(object):
             SEC_PASSWORD_FILE = %s/bosco/glite/etc/passwdfile
             USE_SHARED_PORT = False
             ENABLE_URL_TRANSFERS = False
-        """ % (self.sandbox, installpath, installpath)
+        """ % (sandboxpath, installpath, installpath)
 
         c = textwrap.dedent(config)
         cfgfile = os.path.join(self.etcdir,"condor_config.ft-gahp")
